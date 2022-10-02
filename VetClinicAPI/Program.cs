@@ -1,5 +1,9 @@
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using VetClinicAPI.Data;
+using VetClinicAPI.Repositories.Vet;
+using VetClinicAPI.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +18,14 @@ builder.Services.AddDbContext<VetClinicDbContext>(options =>
 {
     options.UseMySql(builder.Configuration.GetConnectionString("Default"), ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("Default")));
 });
+
+builder.Services.AddScoped<IVetRepository, VetRepository>();
+
+builder.Services.AddAutoMapper(typeof(Program).Assembly);
+
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationClientsideAdapters();
+builder.Services.AddValidatorsFromAssemblyContaining<VetValidator>();
 
 var app = builder.Build();
 
